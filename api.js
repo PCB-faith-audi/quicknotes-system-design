@@ -60,7 +60,11 @@ async function request(url, options = {}) {
   // 204 No Content – nothing to parse
   if (response.status === 204) return null;
 
-  return response.json();
+  const data = await response.json();
+  if (data && typeof data === 'object') {
+    data.statusCode = response.status;
+  }
+  return data;
 }
 
 // ── API Functions ────────────────────────────────────────────
@@ -69,7 +73,7 @@ async function request(url, options = {}) {
  * GET /posts?_limit=10 – Fetch the ten most recent notes.
  */
 async function loadNotes() {
-  setStatus('Loading notes…', 'loading');
+  setStatus('Loading notes...', 'loading');
   setButtonsDisabled(true);
 
   try {
@@ -81,10 +85,10 @@ async function loadNotes() {
       return;
     }
 
-    setStatus(`✓ ${notes.length} notes loaded.`, 'success');
+    setStatus(`Loaded ${notes.length} notes from the server.`, 'success');
     renderNotes(notes);
   } catch (err) {
-    setStatus(`Error loading notes: ${err.message}`, 'error');
+    setStatus('Failed to load notes. Please check your connection and try again.', 'error');
   } finally {
     setButtonsDisabled(false);
   }
@@ -95,7 +99,7 @@ async function loadNotes() {
  * @param {{ title: string, body: string }} noteData
  */
 async function createNote(noteData) {
-  setStatus('Saving note…', 'loading');
+  setStatus('Creating note...', 'loading');
   setButtonsDisabled(true);
 
   try {
@@ -105,12 +109,13 @@ async function createNote(noteData) {
       body: JSON.stringify({ ...noteData, userId: 1 }),
     });
 
-    setStatus(`✓ Note "${created.title}" saved (id: ${created.id}).`, 'success');
+    const status = created.statusCode || 201;
+    setStatus(`Note created (status ${status}, id ${created.id}).`, 'success');
     prependNote(created);
     noteForm.reset();
     updateCharCounter();
   } catch (err) {
-    setStatus(`Error saving note: ${err.message}`, 'error');
+    setStatus(`Failed to create note: ${err.message}`, 'error');
   } finally {
     setButtonsDisabled(false);
   }
@@ -217,7 +222,7 @@ function renderEmptyState() {
   notesList.innerHTML = '';
   const li = document.createElement('li');
   li.className = 'notes-empty';
-  li.textContent = 'No notes yet. Create one above or click "Load Notes".';
+  li.textContent = 'No notes yet. Create one above or click "Load notes".';
   notesList.appendChild(li);
 }
 
