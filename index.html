@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="QuickNotes – capture, browse and delete your notes instantly."
+    />
+    <title>QuickNotes</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="api.js" defer></script>
+  </head>
+
+  <body>
+    <header class="app-header">
+      <div class="header-inner">
+        <div class="logo">
+          <span class="logo-icon" aria-hidden="true">⚡</span>
+          <span class="logo-text">QuickNotes</span>
+        </div>
+        <p class="tagline">Capture ideas at the speed of thought.</p>
+      </div>
+    </header>
+
+    <main class="app-main">
+
+      <!-- ── Status bar ─────────────────────────────────────────── -->
+      <p id="status" class="status" aria-live="polite"></p>
+
+      <!-- ── Load notes button ──────────────────────────────────── -->
+      <section class="section-load" aria-label="Load notes">
+        <button id="load-btn" class="btn btn-primary" type="button">
+          <span class="btn-icon" aria-hidden="true">📥</span>
+          Load Notes
+        </button>
+      </section>
+
+      <!-- ── Create note form ───────────────────────────────────── -->
+      <section class="section-form" aria-label="Create a new note">
+        <h2 class="section-title">New Note</h2>
+
+        <form id="note-form" class="note-form" novalidate>
+          <div class="form-group">
+            <label for="title-input" class="form-label">
+              Title
+              <span class="required-mark" aria-hidden="true">*</span>
+            </label>
+            <input
+              id="title-input"
+              name="title"
+              type="text"
+              class="form-input"
+              placeholder="Note title (max 100 characters)"
+              maxlength="100"
+              autocomplete="off"
+              required
+            />
+            <span class="char-counter" id="title-counter" aria-live="polite">0 / 100</span>
+          </div>
+
+          <div class="form-group">
+            <label for="body-input" class="form-label">Body</label>
+            <textarea
+              id="body-input"
+              name="body"
+              class="form-textarea"
+              placeholder="Write your note here…"
+              rows="5"
+            ></textarea>
+          </div>
+
+          <button id="submit-btn" class="btn btn-accent" type="submit">
+            <span class="btn-icon" aria-hidden="true">✏️</span>
+            Save Note
+          </button>
+        </form>
+      </section>
+
+      <!-- ── Notes list ─────────────────────────────────────────── -->
+      <section class="section-notes" aria-label="Notes list">
+        <h2 class="section-title">Your Notes</h2>
+        <ul id="notes-list" class="notes-list" aria-label="Notes"></ul>
+      </section>
+
+    </main>
+
+    <footer class="app-footer">
+      <p>QuickNotes &copy; 2026 &mdash; Powered by JSONPlaceholder</p>
+    </footer>
+  </body>
+</html>
