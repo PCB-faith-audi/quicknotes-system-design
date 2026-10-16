@@ -37,6 +37,9 @@ function setStatus(message, type = '') {
 function setButtonsDisabled(disabled) {
   loadBtn.disabled   = disabled;
   submitBtn.disabled = disabled;
+  document.querySelectorAll('.btn-delete').forEach(btn => {
+    btn.disabled = disabled;
+  });
 }
 
 // ── Core Request Utility ─────────────────────────────────────
@@ -123,25 +126,39 @@ async function createNote(noteData) {
 
 /**
  * DELETE /posts/:id – Remove a note by id.
+ *
+ * Handling JSONPlaceholder mock API behavior:
+ * JSONPlaceholder is a mock REST service that simulates API operations without actually
+ * persisting writes to a real database. Notes created client-side via POST /posts receive
+ * simulated IDs (e.g., id: 101) but do not exist in the remote server state.
+ *
+ * Approach:
+ * 1. We still issue a real HTTP DELETE request (`${API_URL}/${id}`) to test and demonstrate
+ *    proper client-to-server HTTP communication.
+ * 2. On success (or if the server acknowledges the delete), we immediately remove the note's
+ *    corresponding <li> element from the local DOM so the UI remains consistent.
+ * 3. If removing the item leaves the list empty, we restore the empty-state placeholder.
+ * 4. Any network or HTTP errors are caught and surfaced to the user via the #status element.
+ *
  * @param {number} id
- * @param {HTMLElement} listItem - The <li> to remove from the DOM.
+ * @param {HTMLElement} listItem - The <li> element to remove from the DOM upon success.
  */
 async function deleteNote(id, listItem) {
-  setStatus(`Deleting note ${id}…`, 'loading');
+  setStatus(`Deleting note ${id}...`, 'loading');
   setButtonsDisabled(true);
 
   try {
     await request(`${API_URL}/${id}`, { method: 'DELETE' });
 
     listItem.remove();
-    setStatus(`✓ Note ${id} deleted.`, 'success');
+    setStatus(`Note ${id} deleted successfully.`, 'success');
 
     // Check if list is now empty
     if (notesList.children.length === 0) {
       renderEmptyState();
     }
   } catch (err) {
-    setStatus(`Error deleting note: ${err.message}`, 'error');
+    setStatus(`Failed to delete note ${id}: ${err.message}`, 'error');
   } finally {
     setButtonsDisabled(false);
   }
