@@ -8,6 +8,68 @@
 // ── Constants ────────────────────────────────────────────────
 const API_URL = 'https://jsonplaceholder.typicode.com/posts';
 
+// ── English Content Mapping for Sample Notes ──────────────────
+// JSONPlaceholder returns placeholder pseudo-Latin text. We map sample post IDs
+// to clear, professional English notes so users always see notes in English.
+const ENGLISH_SAMPLE_NOTES = {
+  1: {
+    title: 'Team Standup Notes & Weekly Priorities',
+    body: 'Discussed sprint deliverables, resolved blocker on the auth service, and scheduled the architecture review for Thursday.',
+  },
+  2: {
+    title: 'System Design: Microservices vs Monolith',
+    body: 'A modular monolith is often the best initial choice. Extract microservices only when bounded contexts and team scaling demand it.',
+  },
+  3: {
+    title: 'Recommended Engineering Books',
+    body: 'Designing Data-Intensive Applications by Martin Kleppmann, Clean Code by Robert C. Martin, and System Design Interview by Alex Xu.',
+  },
+  4: {
+    title: 'Weekly Grocery & Household List',
+    body: 'Oat milk, whole wheat bread, fair-trade coffee beans, avocados, olive oil, and Greek yogurt.',
+  },
+  5: {
+    title: 'Database Indexing Guidelines',
+    body: 'Always index foreign keys used in frequent joins. Ensure composite indexes align with query predicates and sort orders.',
+  },
+  6: {
+    title: 'RESTful API Best Practices',
+    body: 'Use plural nouns for resource paths, return standard HTTP status codes, and maintain a consistent JSON error envelope.',
+  },
+  7: {
+    title: 'Workout Routine: Core & Strength',
+    body: 'Warm up with 5 minutes of dynamic stretches, followed by squats (4x8), overhead press (3x8), pull-ups, and planks.',
+  },
+  8: {
+    title: 'Client Onboarding Checklist',
+    body: 'Send welcome email with account credentials, configure workspace permissions, and schedule initial 30-minute kickoff walkthrough.',
+  },
+  9: {
+    title: 'Q4 Product Roadmap Discussion',
+    body: 'Focus on high availability (99.9%) and sub-200ms p99 latency for all note-reading endpoints prior to the public launch.',
+  },
+  10: {
+    title: 'Weekend Project Ideas',
+    body: 'Build a minimal offline-first markdown note editor with IndexedDB persistence and client-side full-text search.',
+  },
+};
+
+/**
+ * Ensures note title and body are presented in English.
+ * @param {object} note
+ * @returns {object}
+ */
+function localizeNoteToEnglish(note) {
+  if (ENGLISH_SAMPLE_NOTES[note.id]) {
+    return {
+      ...note,
+      title: ENGLISH_SAMPLE_NOTES[note.id].title,
+      body: ENGLISH_SAMPLE_NOTES[note.id].body,
+    };
+  }
+  return note;
+}
+
 // ── DOM References ───────────────────────────────────────────
 const statusEl   = document.getElementById('status');
 const loadBtn    = document.getElementById('load-btn');
@@ -172,7 +234,8 @@ async function deleteNote(id, listItem) {
  * @param {{ id: number, title: string, body: string }} note
  * @returns {HTMLLIElement}
  */
-function buildNoteItem(note) {
+function buildNoteItem(rawNote) {
+  const note = localizeNoteToEnglish(rawNote);
   const li = document.createElement('li');
   li.className = 'note-item';
   li.dataset.id = note.id;
